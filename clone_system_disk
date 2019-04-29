@@ -1,0 +1,36 @@
+1.挂载模板(原数据库系统盘)
+2.挂载新系统盘(格式化并挂载)
+3.rsync -aHAS /mnt/source/ /mnt/dest/ --exclude ...
+
+4.mount --bind /dev /mnt/dest/dev（到新系统盘内）
+5.chroot /mnt/dest （已新系统盘为根目录)
+
+6.grub> root(hd2,0) #hd2看情况而定，主要看新系统盘在当前系统下是第几块儿盘
+
+7.grub> setup(hd2) #hd2同上
+
+8.exit #退出chroot
+
+9.blkid 新系统盘，替换新系统盘内/mnt/dest/boot/grub/grub.conf及/mnt/dest/etc/fstab内的UUID值
+10.umount即可
+
+
+
+
+1.挂载模板(原数据库系统盘)
+2.挂载新系统盘(格式化并挂载)
+3.rsync -aHAS /mnt/source/ /mnt/dest/ --exclude ...
+
+4.删除新系统盘内的boot/grub下的内容 rm -rf /boot/grub
+
+5.执行grub-install(grub-install --root-directory=/mnt/dest/ /dev/vdg)#/mnt/dest为新系统盘挂载目录 /dev/vdg为新系统盘的块儿设备
+
+6.cp /boot/grub/grub.conf /mnt/dest/boot/grub && cp /boot/grub/splash.xpm.gz /mnt/dest/boot/grub
+
+7.修改/mnt/dest/boot/device.map(虚拟机只需要保留(hd0)  /dev/vda)
+
+8.cd /mnt/dest/boot/grub && ln -s ./grub.conf menu.lst
+
+9.执行blkid /dev/vdg1 将UUID值替换进入/mnt/dest/boot/grub/grub.conf和/mnt/dest/etc/fstab
+
+10.umount 新系统盘即可
